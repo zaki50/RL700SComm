@@ -1,0 +1,201 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.zakky.rl700s.comm</groupId>
+  <artifactId>rl700s-comm</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0.0-SNAPSHOT</version>
+  <name>RL700SComm</name>
+
+  <organization>
+    <name>RL-700S プロジェクト</name>
+    <url>https://github.com/zaki50/RL700SComm</url>
+  </organization>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <!-- ソースコードのエンコーディングを指定 -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- デフォルトの生成物作成場所  -->
+    <target.dir>target</target.dir>
+
+    <!-- manifest.mfに格納する情報を定めるプロパティ -->
+    <vendorName>RL-700S Project</vendorName>
+    <buildUser>L-700S Project</buildUser>
+  </properties>
+
+  <profiles>
+
+    <!-- eclipse プロジェクトの場合にターゲットフォルダを変えるためのプロファイル -->
+    <profile>
+      <id>eclipse-folders</id>
+      <properties>
+        <target.dir>target-eclipse</target.dir>
+      </properties>
+    </profile>
+
+    <!--
+      hudsonでレポートを生成するために必要なprofile
+
+      ・「コンパイラの警告」を機能させるために警告の出力を有効
+    -->
+    <profile>
+      <id>hudson-build</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <showDeprecation>true</showDeprecation>
+              <showWarnings>true</showWarnings>
+              <compilerArgument>-Xlint:all</compilerArgument>
+            </configuration>
+            <!-- バージョン2.3.2でないと警告出力でビルドエラーになる(詳細：http://jira.codehaus.org/browse/MCOMPILER-109) -->
+            <version>2.3.2</version>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <build>
+    <outputDirectory>${basedir}/${target.dir}/classes</outputDirectory>
+    <testOutputDirectory>${basedir}/${target.dir}/test-classes</testOutputDirectory>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <configuration>
+            <encoding>UTF-8</encoding>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>1.5</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+          <encoding>UTF-8</encoding>
+          <optimize>true</optimize>
+          <debug>true</debug>
+          <debuglevel>lines,source</debuglevel>
+        </configuration>
+        <version>2.1</version>
+      </plugin>
+      <!-- jar,mar,aarに格納されるmanifest.mfの設定 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <archive>
+            <addMavenDescriptor>false</addMavenDescriptor>
+            <manifest>
+              <!-- 下記パラメータをtrueにすると、Specification-Vendor,Title,Versionが自動的に付加される -->
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+            <manifestEntries>
+              <!-- Vendor と uilt-By を上書きする -->
+              <Specification-Vendor>${vendorName}</Specification-Vendor>
+              <Built-By>${buildUser}</Built-By>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+<!--
+          <workspaceCodeStylesURL>${codeStyleURL}</workspaceCodeStylesURL>
+-->
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+          <projectNameTemplate>[artifactId]-[version]</projectNameTemplate>
+          <additionalBuildcommands>
+            <buildCommand>
+              <name>org.maven.ide.eclipse.maven2Builder</name>
+              <arguments/>
+            </buildCommand>
+          </additionalBuildcommands>
+          <additionalProjectnatures>
+            <projectnature>org.maven.ide.eclipse.maven2Nature</projectnature>
+          </additionalProjectnatures>
+          <additionalConfig>
+            <file>
+              <name>.settings/org.maven.ide.eclipse.prefs</name>
+              <content>
+              <![CDATA[#Wed Oct 07 00:55:19 JST 2009
+activeProfiles=
+eclipse.preferences.version=1
+fullBuildGoals=process-test-resources
+includeModules=false
+resolveWorkspaceProjects=true
+resourceFilterGoals=process-resources resources\:testResources
+skipCompilerPlugin=false
+version=1
+                ]]>
+              </content>
+            </file>
+            <file>
+              <name>.settings/org.eclipse.core.resources.prefs</name>
+              <content>
+              <![CDATA[eclipse.preferences.version=1
+encoding/<project>=UTF-8
+
+                ]]>
+              </content>
+            </file>
+          </additionalConfig>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <locales>ja_JP</locales>
+          <inputEncoding>UTF-8</inputEncoding>
+          <outputEncoding>UTF-8</outputEncoding>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.6.1</version>
+        <configuration>
+          <locale>${doclang}</locale>
+          <charset>UTF-8</charset>
+          <encoding>UTF-8</encoding>
+          <docencoding>UTF-8</docencoding>
+          <show>public</show>
+          <additionalJOption>-J-Dfile.encoding=UTF-8 -J-Xmx256m</additionalJOption>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+</project>

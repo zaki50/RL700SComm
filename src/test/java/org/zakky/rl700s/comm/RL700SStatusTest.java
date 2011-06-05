@@ -113,4 +113,34 @@ public class RL700SStatusTest {
         assertEquals(0x827f, status.getPhaseNumber());
     }
 
+    @Test
+    public void 正常_ErrorInfo_fromRawValue() throws Exception {
+        assertEquals(EnumSet.noneOf(ErrorInfo.class), ErrorInfo.fromRawValue(0, 0));
+        assertEquals(EnumSet.of(ErrorInfo.NO_MEDIA, ErrorInfo.MEDIA_END, ErrorInfo.CUTTER_JAM,
+                ErrorInfo.LOW_BATTERY), ErrorInfo.fromRawValue(0x0f, 0));
+        assertEquals(EnumSet.of(ErrorInfo.COVER_OPEN, ErrorInfo.UNUSED3,
+                ErrorInfo.HEAD_DETECTION_ERROR, ErrorInfo.RFID_ERROR), ErrorInfo.fromRawValue(0,
+                0xf0));
+        assertEquals(EnumSet.allOf(ErrorInfo.class), ErrorInfo.fromRawValue(255, 255));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void 異常_ErrorInfo_fromRawValueのerrorInfo1が範囲外1() throws Exception {
+        ErrorInfo.fromRawValue(-1, 100);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void 異常_ErrorInfo_fromRawValueのerrorInfo1が範囲外2() throws Exception {
+        ErrorInfo.fromRawValue(256, 100);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void 異常_ErrorInfo_fromRawValueのerrorInfo2が範囲外1() throws Exception {
+        ErrorInfo.fromRawValue(100, -1);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void 異常_ErrorInfo_fromRawValueのerrorInfo2が範囲外2() throws Exception {
+        ErrorInfo.fromRawValue(100, 256);
+    }
 }

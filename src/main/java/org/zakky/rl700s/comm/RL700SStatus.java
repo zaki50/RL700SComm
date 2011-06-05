@@ -137,10 +137,10 @@ public final class RL700SStatus {
         }
 
         private static int bytesToInt(int errorInfo1, int errorInfo2) {
-            if (errorInfo1 < 0 || 255 <= errorInfo1) {
+            if (errorInfo1 < 0 || 255 < errorInfo1) {
                 throw new RuntimeException("'errorInfo1' out of range: " + errorInfo1);
             }
-            if (errorInfo2 < 0 || 255 <= errorInfo2) {
+            if (errorInfo2 < 0 || 255 < errorInfo2) {
                 throw new RuntimeException("'errorInfo2' out of range: " + errorInfo2);
             }
             final int value = errorInfo1 | (errorInfo2 << 8);

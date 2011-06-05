@@ -18,6 +18,7 @@ package org.zakky.rl700s.comm;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.text.ParseException;
 import java.util.EnumSet;
 
 public final class RL700SStatus {
@@ -40,32 +41,39 @@ public final class RL700SStatus {
 
     public static final int STATUS_SIZE = 32;
 
-    public static RL700SStatus parse(ByteBuffer buffer) {
+    public static RL700SStatus parse(ByteBuffer buffer) throws ParseException {
         if (buffer.remaining() < STATUS_SIZE) {
             throw new BufferUnderflowException();
         }
         final byte[] array = buffer.array();
         int current = buffer.arrayOffset() + buffer.position();
-        if (array[current++] != 0x80) {
+        if (array[current++] != (byte) 0x80) {
             // ヘッダーマーカーエラー
+            throw new ParseException("missing header marker.", current - 1);
         }
-        if (array[current++] != 0x20) {
+        if (array[current++] != (byte) 0x20) {
             // サイズエラー
+            throw new ParseException("invalid size.", current - 1);
         }
         if (array[current++] != (byte) 'B') {
             // エラー
+            throw new ParseException("invalid value.", current - 1);
         }
         if (array[current++] != (byte) '3') {
             // エラー
+            throw new ParseException("invalid value.", current - 1);
         }
         if (array[current++] != (byte) '1') {
             // エラー
+            throw new ParseException("invalid value.", current - 1);
         }
         if (array[current++] != (byte) '0') {
             // エラー
+            throw new ParseException("invalid value.", current - 1);
         }
-        if (array[current++] != 0x00) {
+        if (array[current++] != (byte) 0x00) {
             // エラー
+            throw new ParseException("invalid value.", current - 1);
         }
         final int enhancedErrorCode = array[current++] & 0xff;
         final int enhancedInfo1 = array[current++] & 0xff;
@@ -158,11 +166,11 @@ public final class RL700SStatus {
     private final int mMediaLength;
     private final int mStatusType;
     private final int mPhaseType;
-    private final int mPhaseNumbe;
+    private final int mPhaseNumber;
 
     public RL700SStatus(int enhancedErrorCode, int errorInfo1, int errorInfo2,
             int mediaWidth, int mediaType, int mediaLength, int statusType, int phaseType,
-            int phaseNumbe) {
+            int phaseNumber) {
         super();
         mEnhancedErrorCode = enhancedErrorCode;
         mErrorInfoSet = ErrorInfo.fromRawValue(errorInfo1, errorInfo2);
@@ -171,7 +179,7 @@ public final class RL700SStatus {
         mMediaLength = mediaLength;
         mStatusType = statusType;
         mPhaseType = phaseType;
-        mPhaseNumbe = phaseNumbe;
+        mPhaseNumber = phaseNumber;
     }
 
     public static final int EERR_MEDIA_FINISHED = 0x10;
@@ -215,8 +223,8 @@ public final class RL700SStatus {
         return mPhaseType;
     }
 
-    public int getPhaseNumbe() {
-        return mPhaseNumbe;
+    public int getPhaseNumber() {
+        return mPhaseNumber;
     }
 
 }

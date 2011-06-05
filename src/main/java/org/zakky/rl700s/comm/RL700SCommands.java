@@ -40,20 +40,39 @@ public final class RL700SCommands {
     }
 
     /**
-     * 動作モードのための enum
+     * 動作モードのための {@code enum}。
      */
     public enum Mode {
-        AUTO_TAPE_CUT(1 << 6), MIRROR(1 << 7);
+        /** オートテープカット */
+        AUTO_TAPE_CUT(1 << 6),
+        /** ミラー印字 */
+        MIRROR(1 << 7);
+
+        /** ワイヤー上での値。実際は unsigned byte なので 0 から 255 の範囲に収まること。 */
         private final int mRawValue;
 
         private Mode(int rawValue) {
+            if (rawValue < 0 || (1 << 8) <= rawValue) {
+                throw new RuntimeException("rawValue(" + rawValue + ") is out of range");
+            }
             mRawValue = rawValue;
         }
 
+        /**
+         * ワイヤー上での値を返します。
+         * 
+         * @return ワイヤー上での実際の値。
+         */
         public int rawValue() {
             return mRawValue;
         }
 
+        /**
+         * 複数のフラグを合成して、ワイヤー上の値を作成します。
+         * 
+         * @param modes フラグの集合。
+         * @return ワイヤー上の実際の値。
+         */
         public static byte modesValue(EnumSet<Mode> modes) {
             int value = 0;
             for (Mode m : modes) {
@@ -65,24 +84,45 @@ public final class RL700SCommands {
     };
 
     /**
-     * 拡張モードのための enum
+     * 拡張モードのための {@code enum}。
      */
     public enum EnhancedMode {
-        HALF_CUT(1 << 2), // ハーフカット(マルチハーフカット)、ラミネートテープのみ
-        NON_CHAIN_PRINT(1 << 3), // チェインプリントしない(最後の1枚をフィードカットする)
-        CUT_ON_CHAIN_PRINT(1 << 5), // 連続印刷の時に最後の1枚の後部をカットする
-        FINE_PRINT(1 << 6), // 高精細印刷(720dpi x 360 dpi)
-        COPY_PRINT(1 << 7); // コピー印刷機能(印刷時バッファクリアなし)
+        /** ハーフカット(マルチハーフカット)、ラミネートテープのみ */
+        HALF_CUT(1 << 2),
+        /** チェインプリントしない(最後の1枚をフィードカットする) */
+        NON_CHAIN_PRINT(1 << 3),
+        /** 連続印刷の時に最後の1枚の後部をカットする */
+        CUT_ON_CHAIN_PRINT(1 << 5),
+        /** 高精細印刷(720dpi x 360 dpi) */
+        FINE_PRINT(1 << 6),
+        /** コピー印刷機能(印刷時バッファクリアなし) */
+        COPY_PRINT(1 << 7);
+
+        /** ワイヤー上での値。実際は unsigned byte なので 0 から 255 の範囲に収まること。 */
         private final int mRawValue;
 
         private EnhancedMode(int rawValue) {
+            if (rawValue < 0 || (1 << 8) <= rawValue) {
+                throw new RuntimeException("rawValue(" + rawValue + ") is out of range");
+            }
             mRawValue = rawValue;
         }
 
+        /**
+         * ワイヤー上での値を返します。
+         * 
+         * @return ワイヤー上での実際の値。
+         */
         public int rawValue() {
             return mRawValue;
         }
 
+        /**
+         * 複数のフラグを合成して、ワイヤー上の値を作成します。
+         * 
+         * @param modes フラグの集合。
+         * @return ワイヤー上の実際の値。
+         */
         public static byte modesValue(EnumSet<EnhancedMode> modes) {
             int value = 0;
             for (EnhancedMode m : modes) {
@@ -93,28 +133,96 @@ public final class RL700SCommands {
         }
     };
 
+    /**
+     * コマンドモードの {@code enum}。
+     */
     enum CommandMode {
-        ESC_P(0), RASTER(1);
+        /** ESC/P モード */
+        ESC_P(0),
+        /** ラスタグラフィックモード */
+        RASTER(1);
+
+        /** ワイヤー上での値。実際は unsigned byte なので 0 から 255 の範囲に収まること。 */
         private final int mRawValue;
 
         private CommandMode(int rawValue) {
+            if (rawValue < 0 || (1 << 8) <= rawValue) {
+                throw new RuntimeException("rawValue(" + rawValue + ") is out of range");
+            }
             mRawValue = rawValue;
         }
 
+        /**
+         * ワイヤー上での値を返します。
+         * 
+         * @return ワイヤー上での実際の値。
+         */
         public int rawValue() {
             return mRawValue;
         }
-
     }
 
+    /**
+     * 画像圧縮モードの {@code enum}。
+     */
     enum CompressionMode {
-        NONE(0), TIFF(2);
+        /** 無圧縮モード */
+        NONE(0),
+        /** TIFF(Pack Bits) 圧縮モード */
+        TIFF(2);
+
+        /** ワイヤー上での値。実際は unsigned byte なので 0 から 255 の範囲に収まること。 */
         private final int mRawValue;
 
-        private CompressionMode(int rawVaue) {
-            mRawValue = rawVaue;
+        private CompressionMode(int rawValue) {
+            if (rawValue < 0 || (1 << 8) <= rawValue) {
+                throw new RuntimeException("rawValue(" + rawValue + ") is out of range");
+            }
+            mRawValue = rawValue;
         }
 
+        /**
+         * ワイヤー上での値を返します。
+         * 
+         * @return ワイヤー上での実際の値。
+         */
+        public int rawValue() {
+            return mRawValue;
+        }
+    }
+
+    /**
+     * 用紙選択のための {@code enum}。
+     */
+    enum Paper {
+        /** 不明 */
+        UNKNOWN(0),
+        /** ラミネート */
+        LAMINATE(1),
+        /** レタリング */
+        LETERING(2),
+        /** ノンラミネート */
+        NON_LAMINATE(3),
+        /** HG テープ */
+        HG(9),
+        /** SZ テープ */
+        SZ(16);
+
+        /** ワイヤー上での値。実際は unsigned byte なので 0 から 255 の範囲に収まること。 */
+        private final int mRawValue;
+
+        private Paper(int rawValue) {
+            if (rawValue < 0 || (1 << 8) <= rawValue) {
+                throw new RuntimeException("rawValue(" + rawValue + ") is out of range");
+            }
+            mRawValue = rawValue;
+        }
+
+        /**
+         * ワイヤー上での値を返します。
+         * 
+         * @return ワイヤー上での実際の値。
+         */
         public int rawValue() {
             return mRawValue;
         }
@@ -185,6 +293,13 @@ public final class RL700SCommands {
         buffer.flip();
     }
 
+    /**
+     * 余白量(フィード量)指定コマンド
+     * 
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
+     * @param mergin 余白量(ドット)
+     */
     public static void getSetMergin(ByteBuffer buffer, int mergin) {
         final byte low = (byte) ((mergin >>> 0) & 0xFF);
         final byte high = (byte) ((mergin >>> 8) & 0xFF);
@@ -214,6 +329,13 @@ public final class RL700SCommands {
         buffer.flip();
     }
 
+    /**
+     * コマンドモード切り替えコマンド
+     * 
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
+     * @param mode コマンドモード。
+     */
     public static void getSwitchCommandMode(ByteBuffer buffer, CommandMode mode) {
         buffer.reset();
         buffer.put(ESC);
@@ -223,6 +345,14 @@ public final class RL700SCommands {
         buffer.flip();
     }
 
+    /**
+     * ラスターライン送信コマンド。
+     * 
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
+     * @param line ラインビット列。圧縮モードにかかわらず、非圧縮のビット列を渡すこと。
+     * @param mode 圧縮モード。
+     */
     public static void getSendRasterLine(ByteBuffer buffer, byte[] line, CompressionMode mode) {
         if (mode != CompressionMode.NONE) {
             throw new UnsupportedOperationException("unsupported compression mode: " + mode.name());
@@ -237,6 +367,101 @@ public final class RL700SCommands {
         buffer.put(line);
         buffer.flip();
     }
+
+    /**
+     * ゼロラスターライン(すべてのbitが0のライン)送信コマンド。
+     * 
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
+     */
+    public static void getSendZeroRasterLine(ByteBuffer buffer) {
+        buffer.reset();
+        buffer.put((byte) 'Z');
+        buffer.flip();
+    }
+
+    /**
+     * 印字司令(カットライン前)コマンド。
+     * 
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
+     */
+    public static void getStartPrintWithHalfCut(ByteBuffer buffer) {
+        buffer.reset();
+        buffer.put((byte) 0x0b);
+        buffer.flip();
+    }
+
+    /**
+     * 印字司令コマンド。
+     * 
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
+     */
+    public static void getStartPrint(ByteBuffer buffer) {
+        buffer.reset();
+        buffer.put((byte) 0x0c);
+        buffer.flip();
+    }
+
+    /**
+     * 排出動作を伴う印字司令コマンド。
+     * 
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
+     */
+    public static void getStartPrintWithEvacuation(ByteBuffer buffer) {
+        buffer.reset();
+        buffer.put((byte) 0x1a);
+        buffer.flip();
+    }
+
+    /**
+     * 印刷情報セットコマンド。
+     * 
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
+     * @param paperKind 用紙の種別。変更しない場合は {@code null} を渡してください。
+     * @param paperWidth 用紙の幅。変更しない場合は {@code null} を渡してください。
+     * @param paperLength 用紙の長さ。変更しない場合は {@code null} を渡してください。
+     * @param enableRecover 本体でリカバリー処理を行うかどうか。
+     * @param lowPowerPrint 印字エネルギー。 {@code true} の場合は弱、{@code false} の
+     *            場合は通常で印刷します。
+     */
+    public static void getSetPrintInformation(ByteBuffer buffer, Paper paperKind,
+            Integer paperWidth, Integer paperLength, boolean enableRecover, boolean lowPowerPrint) {
+        final int mask = ((paperKind == null) ? 0 : (1 << 1))
+                | ((paperWidth == null) ? 0 : (1 << 2)) | ((paperLength == null) ? 0 : (1 << 3))
+                | (enableRecover ? 0xF0 : 0);
+        buffer.reset();
+        buffer.put(ESC);
+        buffer.put((byte) 'i');
+        buffer.put((byte) 'c');
+        buffer.put((byte) mask);
+        buffer.put((byte) (paperKind == null ? 0 : paperKind.rawValue()));
+        buffer.put((byte) (paperWidth == null ? 0 : paperWidth.intValue()));
+        buffer.put((byte) (paperLength == null ? 0 : paperLength.intValue()));
+        buffer.put((byte) (lowPowerPrint ? 1 : 0));
+        buffer.flip();
+    }
+
+    /**
+     * 圧縮モード設定コマンド。
+     * 
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
+     * @param mode 圧縮モード。
+     */
+    public static void getSelectCompressionMode(ByteBuffer buffer, CompressionMode mode) {
+        buffer.reset();
+        buffer.put((byte) 'M');
+        buffer.put((byte) mode.rawValue());
+        buffer.flip();
+    }
+
+    /*
+     * 内部で使用するユーティリティメソッド。
+     */
 
     private static final int MAX_LINE_BYTES = 48;
 
@@ -332,68 +557,6 @@ public final class RL700SCommands {
         out[0] = (byte) (in.length - 1);
         System.arraycopy(in, 0, out, 1, in.length);
         return out;
-    }
-
-    public static void getSendZeroRasterLine(ByteBuffer buffer) {
-        buffer.reset();
-        buffer.put((byte) 'Z');
-        buffer.flip();
-    }
-
-    public static void getStartPrintWithHalfCut(ByteBuffer buffer) {
-        buffer.reset();
-        buffer.put((byte) 0x0b);
-        buffer.flip();
-    }
-
-    public static void getStartPrint(ByteBuffer buffer) {
-        buffer.reset();
-        buffer.put((byte) 0x0c);
-        buffer.flip();
-    }
-
-    public static void getStartPrintWithEvacuation(ByteBuffer buffer) {
-        buffer.reset();
-        buffer.put((byte) 0x1a);
-        buffer.flip();
-    }
-
-    enum Paper {
-        UNKNOWN(0), LAMINATE(1), LETERING(2), NON_LAMINATE(3), HG(9), SZ(16);
-        private final int mRawValue;
-
-        private Paper(int rawVaue) {
-            mRawValue = rawVaue;
-        }
-
-        public int rawValue() {
-            return mRawValue;
-        }
-
-    }
-
-    public static void getSetPrintInformation(ByteBuffer buffer, Paper paperKind,
-            Integer paperWidth, Integer paperLength, boolean enableRecover, boolean lowPowerPrint) {
-        final int mask = ((paperKind == null) ? 0 : (1 << 1))
-                | ((paperWidth == null) ? 0 : (1 << 2)) | ((paperLength == null) ? 0 : (1 << 3))
-                | (enableRecover ? 0xF0 : 0);
-        buffer.reset();
-        buffer.put(ESC);
-        buffer.put((byte) 'i');
-        buffer.put((byte) 'c');
-        buffer.put((byte) mask);
-        buffer.put((byte) (paperKind == null ? 0 : paperKind.rawValue()));
-        buffer.put((byte) (paperWidth == null ? 0 : paperWidth.intValue()));
-        buffer.put((byte) (paperLength == null ? 0 : paperLength.intValue()));
-        buffer.put((byte) (lowPowerPrint ? 1 : 0));
-        buffer.flip();
-    }
-
-    public static void getSelectCompressionMode(ByteBuffer buffer, CompressionMode mode) {
-        buffer.reset();
-        buffer.put((byte) 'M');
-        buffer.put((byte) mode.rawValue());
-        buffer.flip();
     }
 
 }

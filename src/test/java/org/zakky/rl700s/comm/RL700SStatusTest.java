@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.zakky.rl700s.comm.RL700SStatus.ErrorInfo;
 
 import java.nio.ByteBuffer;
+import java.text.ParseException;
 import java.util.EnumSet;
 
 public class RL700SStatusTest {
@@ -31,8 +32,7 @@ public class RL700SStatusTest {
     public void tearDown() throws Exception {
     }
 
-    @Test
-    public void 正常_Parse_代表例1() throws Exception {
+    private static ByteBuffer createDefaultStatusBuffer() {
         final ByteBuffer buffer = ByteBuffer.allocate(RL700SStatus.STATUS_SIZE);
         buffer.put((byte) 0x80);
         buffer.put((byte) 0x20);
@@ -42,60 +42,108 @@ public class RL700SStatusTest {
         buffer.put((byte) 0x30);
         buffer.put((byte) 0x00);
         // 拡張エラー番号
-        buffer.put((byte) RL700SStatus.EERR_MEDIA_FINISHED);
+        buffer.put((byte) 0x00);
 
         // エラー情報1
-        buffer.put((byte) 0x02);
+        buffer.put((byte) 0x00);
         // エラー情報2
-        buffer.put((byte) 0x10);
+        buffer.put((byte) 0x00);
         // メディア幅
-        buffer.put((byte) 210);
+        buffer.put((byte) 0x00);
         // メディア種類
-        buffer.put((byte) 150);
+        buffer.put((byte) 0x00);
         // 予約(不定)
-        buffer.put((byte) 0);
+        buffer.put((byte) 0x00);
         // 予約(不定)
-        buffer.put((byte) 0);
+        buffer.put((byte) 0x00);
         // 予約(不定)
-        buffer.put((byte) 0);
+        buffer.put((byte) 0x00);
         // 予約(不定)
-        buffer.put((byte) 0);
+        buffer.put((byte) 0x00);
 
         // 予約(不定)
-        buffer.put((byte) 0);
+        buffer.put((byte) 0x00);
         // メディア長さ
-        buffer.put((byte) 200);
+        buffer.put((byte) 0x00);
         // ステータス種類
-        buffer.put((byte) 0x06);
+        buffer.put((byte) 0x00);
         // フェーズ種類
-        buffer.put((byte) 0x01);
+        buffer.put((byte) 0x00);
         // フェーズ番号上位バイト
-        buffer.put((byte) 0x82);
+        buffer.put((byte) 0x00);
         // フェーズ番号下位バイト
-        buffer.put((byte) 0x7f);
+        buffer.put((byte) 0x00);
         // 予約(不定)
-        buffer.put((byte) 0);
+        buffer.put((byte) 0x00);
         // 予約(不定)
-        buffer.put((byte) 0);
+        buffer.put((byte) 0x00);
 
         // 予約(不定)
-        buffer.put((byte) 0);
+        buffer.put((byte) 0x00);
         // 予約(不定)
-        buffer.put((byte) 0);
+        buffer.put((byte) 0x00);
         // 予約(不定)
-        buffer.put((byte) 0);
+        buffer.put((byte) 0x00);
         // 予約(不定)
-        buffer.put((byte) 0);
+        buffer.put((byte) 0x00);
         // 予約(不定)
-        buffer.put((byte) 0);
+        buffer.put((byte) 0x00);
         // 予約(不定)
-        buffer.put((byte) 0);
+        buffer.put((byte) 0x00);
         // 予約(不定)
-        buffer.put((byte) 0);
+        buffer.put((byte) 0x00);
         // 予約(不定)
-        buffer.put((byte) 0);
+        buffer.put((byte) 0x00);
 
         buffer.flip();
+
+        return buffer;
+    }
+
+    @Test
+    public void 正常_Parse_デフォルト() throws Exception {
+        final ByteBuffer buffer = createDefaultStatusBuffer();
+
+        final RL700SStatus status = RL700SStatus.parse(buffer);
+
+        assertEquals("parse must consume " + RL700SStatus.STATUS_SIZE + "bytes in buffer", 0,
+                buffer.remaining());
+
+        assertEquals(0, status.getEnhancedErrorCode());
+        assertEquals(EnumSet.noneOf(ErrorInfo.class),
+                status.getErrorInfoSet());
+        assertEquals(0, status.getMediaWidth());
+        assertEquals(0, status.getMediaType());
+        assertEquals(0, status.getMediaLength());
+        assertEquals(0, status.getStatusType());
+        assertEquals(0, status.getPhaseType());
+        assertEquals(0, status.getPhaseNumber());
+    }
+
+    @Test
+    public void 正常_Parse_代表例1() throws Exception {
+        final ByteBuffer buffer = createDefaultStatusBuffer();
+        // 拡張エラー番号
+        buffer.put(7, (byte) RL700SStatus.EERR_MEDIA_FINISHED);
+
+        // エラー情報1
+        buffer.put(8, (byte) 0x02);
+        // エラー情報2
+        buffer.put(9, (byte) 0x10);
+        // メディア幅
+        buffer.put(10, (byte) 210);
+        // メディア種類
+        buffer.put(11, (byte) 150);
+        // メディア長さ
+        buffer.put(17, (byte) 200);
+        // ステータス種類
+        buffer.put(18, (byte) 0x06);
+        // フェーズ種類
+        buffer.put(19, (byte) 0x01);
+        // フェーズ番号上位バイト
+        buffer.put(20, (byte) 0x82);
+        // フェーズ番号下位バイト
+        buffer.put(21, (byte) 0x7f);
 
         final RL700SStatus status = RL700SStatus.parse(buffer);
 
@@ -111,6 +159,14 @@ public class RL700SStatusTest {
         assertEquals(6, status.getStatusType());
         assertEquals(1, status.getPhaseType());
         assertEquals(0x827f, status.getPhaseNumber());
+    }
+
+    @Test(expected = ParseException.class)
+    public void 異常_Parse_不正なマーカー() throws Exception {
+        final ByteBuffer buffer = createDefaultStatusBuffer();
+        buffer.put(0, (byte) 0x81);
+
+        RL700SStatus.parse(buffer);
     }
 
     @Test

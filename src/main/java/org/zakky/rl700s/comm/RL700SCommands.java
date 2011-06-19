@@ -20,17 +20,25 @@ import java.nio.ByteBuffer;
 import java.util.EnumSet;
 
 /**
- * RL-700S に対して送るコマンドを生成するクラスです。
+ * RL-700S に対して送るコマンドを生成するクラスです.
  */
 public final class RL700SCommands {
+
     /**
-     * Android 端末から RL-700S へ転送するコマンドの最大長
+     * インスタンス生成禁止.
+     */
+    private RL700SCommands() {
+        throw new AssertionError("instatiation prohibited.");
+    }
+
+    /**
+     * Android 端末から RL-700S へ転送するコマンドの最大長.
      */
     private static final int MAX_OUT_SIZE = 64;
 
     /**
-     * Android端末からプリンタへ送るコマンドのためのバッファを割り当てます。
-     * 
+     * Android端末からプリンタへ送るコマンドのためのバッファを割り当てます.
+     *
      * @return バッファ。 {@link ByteBuffer#capacity() capacity()} が
      *         {@value #MAX_OUT_SIZE} な {@link ByteBuffer} を返します。
      */
@@ -40,18 +48,22 @@ public final class RL700SCommands {
     }
 
     /**
-     * 動作モードのための {@code enum}。
+     * 動作モードのための {@code enum}.
      */
     public enum Mode {
-        /** オートテープカット */
+        /** オートテープカット. */
         AUTO_TAPE_CUT(1 << 6),
-        /** ミラー印字 */
+        /** ミラー印字. */
         MIRROR(1 << 7);
 
-        /** ワイヤー上での値。実際は unsigned byte なので 0 から 255 の範囲に収まること。 */
+        /** ワイヤー上での値。実際は unsigned byte なので 0 から 255 の範囲に収まること. */
         private final int mRawValue;
 
-        private Mode(int rawValue) {
+        /**
+         * ワイヤー上での値を指定して {@link Mode} インスタンスを構築します.
+         * @param rawValue ワイヤー上での値。
+         */
+        private Mode(final int rawValue) {
             if (rawValue < 0 || (1 << 8) <= rawValue) {
                 throw new RuntimeException("rawValue(" + rawValue + ") is out of range");
             }
@@ -60,7 +72,7 @@ public final class RL700SCommands {
 
         /**
          * ワイヤー上での値を返します。
-         * 
+         *
          * @return ワイヤー上での実際の値。
          */
         public int rawValue() {
@@ -69,7 +81,7 @@ public final class RL700SCommands {
 
         /**
          * 複数のフラグを合成して、ワイヤー上の値を作成します。
-         * 
+         *
          * @param modes フラグの集合。
          * @return ワイヤー上の実際の値。
          */
@@ -110,7 +122,7 @@ public final class RL700SCommands {
 
         /**
          * ワイヤー上での値を返します。
-         * 
+         *
          * @return ワイヤー上での実際の値。
          */
         public int rawValue() {
@@ -119,7 +131,7 @@ public final class RL700SCommands {
 
         /**
          * 複数のフラグを合成して、ワイヤー上の値を作成します。
-         * 
+         *
          * @param modes フラグの集合。
          * @return ワイヤー上の実際の値。
          */
@@ -154,7 +166,7 @@ public final class RL700SCommands {
 
         /**
          * ワイヤー上での値を返します。
-         * 
+         *
          * @return ワイヤー上での実際の値。
          */
         public int rawValue() {
@@ -183,7 +195,7 @@ public final class RL700SCommands {
 
         /**
          * ワイヤー上での値を返します。
-         * 
+         *
          * @return ワイヤー上での実際の値。
          */
         public int rawValue() {
@@ -220,7 +232,7 @@ public final class RL700SCommands {
 
         /**
          * ワイヤー上での値を返します。
-         * 
+         *
          * @return ワイヤー上での実際の値。
          */
         public int rawValue() {
@@ -236,7 +248,7 @@ public final class RL700SCommands {
 
     /**
      * 無効司令コマンド
-     * 
+     *
      * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param count コマンドの繰り返し回数。
@@ -252,7 +264,7 @@ public final class RL700SCommands {
 
     /**
      * ステータス情報リクエストコマンド
-     * 
+     *
      * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      */
@@ -266,7 +278,7 @@ public final class RL700SCommands {
 
     /**
      * 初期化コマンド
-     * 
+     *
      * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      */
@@ -279,7 +291,7 @@ public final class RL700SCommands {
 
     /**
      * 各種モード設定コマンド
-     * 
+     *
      * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param modes 有効にするモードの集合。
@@ -295,7 +307,7 @@ public final class RL700SCommands {
 
     /**
      * 余白量(フィード量)指定コマンド
-     * 
+     *
      * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param mergin 余白量(ドット)
@@ -315,7 +327,7 @@ public final class RL700SCommands {
 
     /**
      * 各種モード設定コマンド
-     * 
+     *
      * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param modes 有効にする拡張モードの集合。
@@ -331,7 +343,7 @@ public final class RL700SCommands {
 
     /**
      * コマンドモード切り替えコマンド
-     * 
+     *
      * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param mode コマンドモード。
@@ -347,7 +359,7 @@ public final class RL700SCommands {
 
     /**
      * ラスターライン送信コマンド。
-     * 
+     *
      * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param line ラインビット列。圧縮モードにかかわらず、非圧縮のビット列を渡すこと。
@@ -370,7 +382,7 @@ public final class RL700SCommands {
 
     /**
      * ゼロラスターライン(すべてのbitが0のライン)送信コマンド。
-     * 
+     *
      * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      */
@@ -382,7 +394,7 @@ public final class RL700SCommands {
 
     /**
      * 印字司令(カットライン前)コマンド。
-     * 
+     *
      * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      */
@@ -394,7 +406,7 @@ public final class RL700SCommands {
 
     /**
      * 印字司令コマンド。
-     * 
+     *
      * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      */
@@ -406,7 +418,7 @@ public final class RL700SCommands {
 
     /**
      * 排出動作を伴う印字司令コマンド。
-     * 
+     *
      * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      */
@@ -418,7 +430,7 @@ public final class RL700SCommands {
 
     /**
      * 印刷情報セットコマンド。
-     * 
+     *
      * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param paperKind 用紙の種別。変更しない場合は {@code null} を渡してください。
@@ -447,7 +459,7 @@ public final class RL700SCommands {
 
     /**
      * 圧縮モード設定コマンド。
-     * 
+     *
      * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param mode 圧縮モード。

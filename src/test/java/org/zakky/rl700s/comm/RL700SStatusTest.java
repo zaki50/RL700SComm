@@ -34,7 +34,9 @@ public class RL700SStatusTest {
 
     private static ByteBuffer createDefaultStatusBuffer() {
         final ByteBuffer buffer = ByteBuffer.allocate(RL700SStatus.STATUS_SIZE);
+        // ヘッドマーカー
         buffer.put((byte) 0x80);
+        // サイズ
         buffer.put((byte) 0x20);
         buffer.put((byte) 0x42);
         buffer.put((byte) 0x33);
@@ -159,6 +161,46 @@ public class RL700SStatusTest {
         assertEquals(6, status.getStatusType());
         assertEquals(1, status.getPhaseType());
         assertEquals(0x827f, status.getPhaseNumber());
+    }
+
+    @Test(expected = ParseException.class)
+    public void 異常_Parse_不正なヘッドマーカー() throws Exception {
+        final ByteBuffer buffer = createDefaultStatusBuffer();
+        buffer.put(0, (byte) 0x81);
+
+        RL700SStatus.parse(buffer);
+    }
+
+    @Test(expected = ParseException.class)
+    public void 異常_Parse_不正なサイズ() throws Exception {
+        final ByteBuffer buffer = createDefaultStatusBuffer();
+        buffer.put(1, (byte) 0x19);
+
+        RL700SStatus.parse(buffer);
+    }
+
+    @Test(expected = ParseException.class)
+    public void 異常_Parse_不正なマーカー3() throws Exception {
+        final ByteBuffer buffer = createDefaultStatusBuffer();
+        buffer.put(0, (byte) 0x81);
+
+        RL700SStatus.parse(buffer);
+    }
+
+    @Test(expected = ParseException.class)
+    public void 異常_Parse_不正なマーカー4() throws Exception {
+        final ByteBuffer buffer = createDefaultStatusBuffer();
+        buffer.put(0, (byte) 0x81);
+
+        RL700SStatus.parse(buffer);
+    }
+
+    @Test(expected = ParseException.class)
+    public void 異常_Parse_不正なマーカー5() throws Exception {
+        final ByteBuffer buffer = createDefaultStatusBuffer();
+        buffer.put(0, (byte) 0x81);
+
+        RL700SStatus.parse(buffer);
     }
 
     @Test(expected = ParseException.class)

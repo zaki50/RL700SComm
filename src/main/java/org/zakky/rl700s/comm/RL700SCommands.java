@@ -249,12 +249,12 @@ public final class RL700SCommands {
     /**
      * 無効司令コマンド
      *
-     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#clear() clear()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param count コマンドの繰り返し回数。
      */
     public static void getVoid(ByteBuffer buffer, int count) {
-        buffer.reset();
+        buffer.clear();
         final int c = Math.min(MAX_OUT_SIZE, count);
         for (int i = 0; i < c; i++) {
             buffer.put((byte) 0);
@@ -265,11 +265,11 @@ public final class RL700SCommands {
     /**
      * ステータス情報リクエストコマンド
      *
-     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#clear() clear()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      */
     public static void getStatus(ByteBuffer buffer) {
-        buffer.reset();
+        buffer.clear();
         buffer.put(ESC);
         buffer.put((byte) 'i');
         buffer.put((byte) 'S');
@@ -279,11 +279,11 @@ public final class RL700SCommands {
     /**
      * 初期化コマンド
      *
-     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#clear() clear()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      */
     public static void getInit(ByteBuffer buffer) {
-        buffer.reset();
+        buffer.clear();
         buffer.put(ESC);
         buffer.put((byte) '@');
         buffer.flip();
@@ -292,12 +292,12 @@ public final class RL700SCommands {
     /**
      * 各種モード設定コマンド
      *
-     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#clear() clear()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param modes 有効にするモードの集合。
      */
     public static void getSetMode(ByteBuffer buffer, EnumSet<Mode> modes) {
-        buffer.reset();
+        buffer.clear();
         buffer.put(ESC);
         buffer.put((byte) 'i');
         buffer.put((byte) 'M');
@@ -308,7 +308,7 @@ public final class RL700SCommands {
     /**
      * 余白量(フィード量)指定コマンド
      *
-     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#clear() clear()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param mergin 余白量(ドット)
      */
@@ -316,7 +316,7 @@ public final class RL700SCommands {
         final byte low = (byte) ((mergin >>> 0) & 0xFF);
         final byte high = (byte) ((mergin >>> 8) & 0xFF);
 
-        buffer.reset();
+        buffer.clear();
         buffer.put(ESC);
         buffer.put((byte) 'i');
         buffer.put((byte) 'd');
@@ -328,12 +328,12 @@ public final class RL700SCommands {
     /**
      * 各種モード設定コマンド
      *
-     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#clear() clear()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param modes 有効にする拡張モードの集合。
      */
     public static void getSetEnhancedMode(ByteBuffer buffer, EnumSet<EnhancedMode> modes) {
-        buffer.reset();
+        buffer.clear();
         buffer.put(ESC);
         buffer.put((byte) 'i');
         buffer.put((byte) 'K');
@@ -344,12 +344,12 @@ public final class RL700SCommands {
     /**
      * コマンドモード切り替えコマンド
      *
-     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#clear() clear()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param mode コマンドモード。
      */
     public static void getSwitchCommandMode(ByteBuffer buffer, CommandMode mode) {
-        buffer.reset();
+        buffer.clear();
         buffer.put(ESC);
         buffer.put((byte) 'i');
         buffer.put((byte) 'a');
@@ -360,7 +360,7 @@ public final class RL700SCommands {
     /**
      * ラスターライン送信コマンド。
      *
-     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#clear() clear()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param line ラインビット列。圧縮モードにかかわらず、非圧縮のビット列を渡すこと。
      * @param mode 圧縮モード。
@@ -372,7 +372,7 @@ public final class RL700SCommands {
         final int length = line.length;
         final byte low = (byte) ((length >>> 0) & 0xFF);
         final byte high = (byte) ((length >>> 8) & 0xFF);
-        buffer.reset();
+        buffer.clear();
         buffer.put((byte) 'G');
         buffer.put(low);
         buffer.put(high);
@@ -383,11 +383,11 @@ public final class RL700SCommands {
     /**
      * ゼロラスターライン(すべてのbitが0のライン)送信コマンド。
      *
-     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#clear() clear()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      */
     public static void getSendZeroRasterLine(ByteBuffer buffer) {
-        buffer.reset();
+        buffer.clear();
         buffer.put((byte) 'Z');
         buffer.flip();
     }
@@ -395,11 +395,11 @@ public final class RL700SCommands {
     /**
      * 印字司令(カットライン前)コマンド。
      *
-     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#clear() clear()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      */
     public static void getStartPrintWithHalfCut(ByteBuffer buffer) {
-        buffer.reset();
+        buffer.clear();
         buffer.put((byte) 0x0b);
         buffer.flip();
     }
@@ -407,11 +407,11 @@ public final class RL700SCommands {
     /**
      * 印字司令コマンド。
      *
-     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#clear() clear()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      */
     public static void getStartPrint(ByteBuffer buffer) {
-        buffer.reset();
+        buffer.clear();
         buffer.put((byte) 0x0c);
         buffer.flip();
     }
@@ -419,11 +419,11 @@ public final class RL700SCommands {
     /**
      * 排出動作を伴う印字司令コマンド。
      *
-     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#clear() clear()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      */
     public static void getStartPrintWithEvacuation(ByteBuffer buffer) {
-        buffer.reset();
+        buffer.clear();
         buffer.put((byte) 0x1a);
         buffer.flip();
     }
@@ -431,7 +431,7 @@ public final class RL700SCommands {
     /**
      * 印刷情報セットコマンド。
      *
-     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#clear() clear()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param paperKind 用紙の種別。変更しない場合は {@code null} を渡してください。
      * @param paperWidth 用紙の幅。変更しない場合は {@code null} を渡してください。
@@ -445,7 +445,7 @@ public final class RL700SCommands {
         final int mask = ((paperKind == null) ? 0 : (1 << 1))
                 | ((paperWidth == null) ? 0 : (1 << 2)) | ((paperLength == null) ? 0 : (1 << 3))
                 | (enableRecover ? 0xF0 : 0);
-        buffer.reset();
+        buffer.clear();
         buffer.put(ESC);
         buffer.put((byte) 'i');
         buffer.put((byte) 'c');
@@ -460,12 +460,12 @@ public final class RL700SCommands {
     /**
      * 圧縮モード設定コマンド。
      *
-     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#reset() reset()} し、
+     * @param buffer コマンド書き込み先バッファ。 {@link ByteBuffer#clear() clear()} し、
      *            コマンド書き込み後で {@link ByteBuffer#flip() flip()} したものを返します。
      * @param mode 圧縮モード。
      */
     public static void getSelectCompressionMode(ByteBuffer buffer, CompressionMode mode) {
-        buffer.reset();
+        buffer.clear();
         buffer.put((byte) 'M');
         buffer.put((byte) mode.rawValue());
         buffer.flip();

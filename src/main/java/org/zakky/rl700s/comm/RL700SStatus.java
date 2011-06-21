@@ -24,22 +24,20 @@ import java.util.EnumSet;
 public final class RL700SStatus {
 
     /**
-     * RL-700S から Android 端末へ一度に送信できるデータの最大長
+     * RL-700S から Android 端末へ奥られてくるステータスのサイズ
      */
-    private static final int MAX_OUT_SIZE = 16;
+    public static final int STATUS_SIZE = 32;
 
     /**
      * Android端末からプリンタへ送るコマンドのためのバッファを割り当てます。
-     * 
+     *
      * @return バッファ。 {@link ByteBuffer#capacity() capacity()} が
-     *         {@value #MAX_OUT_SIZE} な {@link ByteBuffer} を返します。
+     *         {@value #STATUS_SIZE} な {@link ByteBuffer} を返します。
      */
-    public static ByteBuffer allocateOutBuffer() {
-        final ByteBuffer buffer = ByteBuffer.allocate(MAX_OUT_SIZE);
+    public static ByteBuffer allocateInBuffer() {
+        final ByteBuffer buffer = ByteBuffer.allocate(STATUS_SIZE);
         return buffer;
     }
-
-    public static final int STATUS_SIZE = 32;
 
     public static RL700SStatus parse(ByteBuffer buffer) throws ParseException {
         if (buffer.remaining() < STATUS_SIZE) {
@@ -186,7 +184,7 @@ public final class RL700SStatus {
 
     /**
      * 拡張エラーコードを返します。
-     * 
+     *
      * @return 拡張エラーコード。 {@link RL700SStatus} に定義されている {@code EERR_} で始まる定数を参照。
      * @see #EERR_MEDIA_FINISHED
      */
@@ -196,7 +194,7 @@ public final class RL700SStatus {
 
     /**
      * エラー情報のセットを返します。
-     * 
+     *
      * @return エラー情報セット。
      */
     public EnumSet<ErrorInfo> getErrorInfoSet() {

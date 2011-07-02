@@ -92,7 +92,7 @@ public final class RL700SStatus {
                 mediaType, mediaLength, statusType, phaseType, phaseNumber);
     }
 
-    enum ErrorInfo {
+    public enum ErrorInfo {
         /** メディア無し */
         NO_MEDIA(bytesToInt((1 << 0), 0)),
         /** メディア終了(再開した場合、同じページから印刷) */

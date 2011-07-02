@@ -148,7 +148,7 @@ public final class RL700SCommands {
     /**
      * コマンドモードの {@code enum}。
      */
-    enum CommandMode {
+    public enum CommandMode {
         /** ESC/P モード */
         ESC_P(0),
         /** ラスタグラフィックモード */
@@ -177,7 +177,7 @@ public final class RL700SCommands {
     /**
      * 画像圧縮モードの {@code enum}。
      */
-    enum CompressionMode {
+    public enum CompressionMode {
         /** 無圧縮モード */
         NONE(0),
         /** TIFF(Pack Bits) 圧縮モード */
@@ -206,7 +206,7 @@ public final class RL700SCommands {
     /**
      * 用紙選択のための {@code enum}。
      */
-    enum Paper {
+    public enum Paper {
         /** 不明 */
         UNKNOWN(0),
         /** ラミネート */

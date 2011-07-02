@@ -366,9 +366,15 @@ public final class RL700SCommands {
      * @param mode 圧縮モード。
      */
     public static void getSendRasterLine(ByteBuffer buffer, byte[] line, CompressionMode mode) {
-        if (mode != CompressionMode.NONE) {
+        if (mode == CompressionMode.NONE) {
+            // nothing to do
+            assert true;
+        } else if (mode == CompressionMode.TIFF) {
+            line = packBits(line);
+        } else {
             throw new UnsupportedOperationException("unsupported compression mode: " + mode.name());
         }
+
         final int length = line.length;
         final byte low = (byte) ((length >>> 0) & 0xFF);
         final byte high = (byte) ((length >>> 8) & 0xFF);
